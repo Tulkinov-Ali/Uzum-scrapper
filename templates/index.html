@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static%}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Selenium Django App</title>
+</head>
+<body>
+    <form method="post" action="{% url 'process_product' %}" onsubmit="startCountdown()">
+        {% csrf_token %}
+        <label for="product_url">Product URL:</label>
+        <input type="text" id="product_url" name="product_url" required>
+
+        <label for="delay_time">Delay Time (in seconds):</label>
+        <input type="number" id="delay_time" name="delay_time" min="0" value="0" required>
+
+        <button type="submit">Process Product</button>
+    </form>
+    <p id="countdown"></p>
+
+    <div id="message">
+        {% if error_message %}
+            <p id="error">Error: {{ error_message }}</p>
+        {% endif %}
+    </div>
+
+    {% if result %}
+        <h2>Result:</h2>
+        <pre>{{ result }}</pre>
+
+        <script>
+            document.getElementById('message').innerHTML = '<p id="success">Success: Product processed successfully!</p>';
+            document.getElementById('message').style.display = 'block';
+        </script>
+    {% endif %}
+
+    {% if error_message %}
+        <script>
+            document.getElementById('message').innerHTML = '<p id="error">Error: {{ error_message }}</p>';
+            document.getElementById('message').style.display = 'block';
+        </script>
+    {% endif %}
+<script>
+        function startCountdown() {
+            var delayTime = document.getElementById('delay_time').value;
+            var countdown = delayTime;
+            var countdownInterval = setInterval(function () {
+                document.getElementById('countdown').innerHTML = countdown + ' seconds remaining';
+                countdown--;
+
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').innerHTML = 'Parsing';
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
